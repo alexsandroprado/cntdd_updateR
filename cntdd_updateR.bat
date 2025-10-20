@@ -23,50 +23,100 @@ echo   In God we trust. All others must bring data. - W. Edwards Deming
 echo ================================================================
 echo.
 
+
+echo.
+echo ==============================================================
+echo  contabiliDados UFERSA - Setup do Ambiente R
+echo --------------------------------------------------------------
+echo  Instalando e/ou atualizando R, RStudio e Rtools
+echo  In God we trust. All others must bring data. - W. E. Deming
+echo ==============================================================
+
 :: --- Verificar se o winget está instalado ---
 where winget >nul 2>&1
 if %errorlevel% neq 0 (
     echo Winget nao encontrado. Instalando App Installer automaticamente...
     set DOWNLOAD_PATH=%USERPROFILE%\Downloads\AppInstaller.msixbundle
     powershell -Command "Invoke-WebRequest -Uri 'https://aka.ms/Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle' -OutFile '%DOWNLOAD_PATH%'"
-    echo Instalando App Installer...
     powershell -Command "Add-AppxPackage -Path '%DOWNLOAD_PATH%'"
     echo.
     echo App Installer instalado. Feche e abra um novo CMD se necessario.
-    echo Depois execute novamente este script para atualizar R, RStudio e Rtools.
     pause
     exit /b
 ) else (
-    echo Winget encontrado! Prosseguindo com atualizacao de R, RStudio e Rtools...
+    echo Winget encontrado! Prosseguindo com instalacao ou atualizacao...
 )
 
+:: ==============================================================
+:: INSTALAR OU ATUALIZAR R
+:: ==============================================================
 echo.
-REM --- Atualizar R, RStudio e Rtools via winget ---
-echo Atualizando R, RStudio e Rtools pelo winget...
-winget upgrade --id RProject.R -e
-winget upgrade --id Posit.RStudio -e
-winget upgrade --id RProject.Rtools -e
+echo Verificando R...
+winget list --id RProject.R >nul 2>&1
+if %errorlevel% neq 0 (
+    echo R nao encontrado. Instalando...
+    winget install --id RProject.R -e --accept-source-agreements --accept-package-agreements
+) else (
+    echo R ja instalado. Verificando atualizacoes...
+    winget upgrade --id RProject.R -e --accept-source-agreements --accept-package-agreements
+)
+
+:: ==============================================================
+:: INSTALAR OU ATUALIZAR RSTUDIO
+:: ==============================================================
 echo.
+echo Verificando RStudio...
+winget list --id Posit.RStudio >nul 2>&1
+if %errorlevel% neq 0 (
+    echo RStudio nao encontrado. Instalando...
+    winget install --id Posit.RStudio -e --accept-source-agreements --accept-package-agreements
+) else (
+    echo RStudio ja instalado. Verificando atualizacoes...
+    winget upgrade --id Posit.RStudio -e --accept-source-agreements --accept-package-agreements
+)
 
-REM --- Caminho base do R no Windows ---
-set RBASE=C:\Program Files\R
+:: ==============================================================
+:: INSTALAR OU ATUALIZAR RTOOLS
+:: ==============================================================
+echo.
+echo Verificando Rtools...
+winget list --id RProject.Rtools >nul 2>&1
+if %errorlevel% neq 0 (
+    echo Rtools nao encontrado. Instalando...
+    winget install --id RProject.Rtools -e --accept-source-agreements --accept-package-agreements
+) else (
+    echo Rtools ja instalado. Verificando atualizacoes...
+    winget upgrade --id RProject.Rtools -e --accept-source-agreements --accept-package-agreements
+)
 
-REM --- Detectar ultima versao instalada do R ---
+:: ==============================================================
+:: LOCALIZAR INSTALAÇÃO DO R
+:: ==============================================================
+set "RBASE=C:\Program Files\R"
+if not exist "%RBASE%" (
+    echo ERRO: Nao foi possivel localizar o diretório do R em "%RBASE%"
+    pause
+    exit /b
+)
+
 for /f "delims=" %%i in ('dir "%RBASE%" /b /ad ^| sort') do set RVERSION=%%i
+set "RSCRIPT=%RBASE%\!RVERSION!\bin\Rscript.exe"
 
-REM --- Montar caminho para o Rscript ---
-set RSCRIPT="%RBASE%\!RVERSION!\bin\Rscript.exe"
+if not exist "!RSCRIPT!" (
+    echo ERRO: Rscript nao encontrado em !RSCRIPT!
+    pause
+    exit /b
+)
 
-echo Versao detectada: !RVERSION!
-echo Usando: !RSCRIPT!
+:: ==============================================================
+:: ATUALIZAR PACOTES R
+:: ==============================================================
 echo.
-
-REM --- Atualizar pacotes do R ---
 echo Atualizando pacotes do R...
-!RSCRIPT! -e "update.packages(ask=FALSE, repos='https://cran.r-project.org')"
+"!RSCRIPT!" -e "update.packages(ask=FALSE, repos='https://cran.r-project.org')"
 
 echo.
-echo ===============================================================
-echo   Processo concluido! - contabiliDados UFERSA
-echo ===============================================================
+echo ==============================================================
+echo  Processo concluido com sucesso!
+echo ==============================================================
 pause
