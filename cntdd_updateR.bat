@@ -15,16 +15,6 @@ echo  ##        ##    ##    ##      ##    ##  ##    ##
 echo  "##mmmm#  ##    ##    ##mmm   "##mm###  "##mm### 
 echo    """""   ""    ""     """"     """ ""    """ "" 
 echo.
-echo ================================================================
-echo   Atualizacao do R, RStudio, Rtools e Pacotes R
-echo   Desenvolvido por contabiliDados UFERSA(http://contabilidados.com.br)
-echo   ------------------------------------------------------------------
-echo   In God we trust. All others must bring data. - W. Edwards Deming
-echo ================================================================
-echo.
-
-
-echo.
 echo ==============================================================
 echo  contabiliDados UFERSA - Setup do Ambiente R
 echo --------------------------------------------------------------
@@ -120,3 +110,4 @@ echo ==============================================================
 echo  Processo concluido com sucesso!
 echo ==============================================================
 pause
+
